@@ -30,14 +30,16 @@ def hour_time(message,clocktime):
     if hour1>0:
         subtractTime = clocktime-hour1*60 #指定したminuteからhourを引く
         message.reply('subtractTime={}'.format(subtractTime))
-        for i in range(hour1):
+        for i in range(hour1*2): # 
             sleep(10) #30分
             if i == 0:
                 message.reply('{}分経過シマシタ'.format(30))
             if i >= 1:
                 if i % 2 == 1:
+                    message.reply('i={}'.format(i))
                     message.reply('{}時間経過シマシタ'.format(i/2))
                 elif i % 2 == 0:
+                    message.reply('i={}'.format(i))
                     message.reply('{}時間{}分経過シマシタ'.format((i/2),30))
         sleep(subtractTime)
         message.reply('{}時間{}分経過シマシタ。目的ノ時間ニナッタタメ、タイマーヲ終了シマス'.format(hour1,subtractTime))
