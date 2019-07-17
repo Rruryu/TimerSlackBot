@@ -29,7 +29,7 @@ def hour_time(message,clocktime):
     if hour1>0:
         subtractTime = clocktime-hour1*60 #指定したminuteからhourを引く
         for i in range(hour1):
-            sleep(hour1*1800)
+            sleep(10) #30分
             if i == 0:
                 message.reply('{}分経過シマシタ'.format(30))
             if i >= 1:
