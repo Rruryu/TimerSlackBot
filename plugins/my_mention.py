@@ -26,8 +26,10 @@ from slackbot.bot import default_reply  # 該当する応答がない場合に�
 
 def hour_time(message,clocktime):
     hour1 = math.floor(clocktime/60) #時間
+    message.reply('hour1={}',hour1)
     if hour1>0:
         subtractTime = clocktime-hour1*60 #指定したminuteからhourを引く
+        message.reply('subtractTime={}',subtractTime)
         for i in range(hour1):
             sleep(10) #30分
             if i == 0:
