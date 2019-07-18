@@ -24,29 +24,31 @@ from slackbot.bot import default_reply  # 該当する応答がない場合に�
 # message.react('icon_emoji')  発言者のメッセージにリアクション(スタンプ)する
 #                               文字列中に':'はいらない
 
-def hour_time(message,clocktime):
-    hour1 = math.floor(clocktime/60) #時間
-    message.reply('hour1={}'.format(hour1))
-    if hour1>0:
-        subtractTime = clocktime-hour1*60 #指定したminuteからhourを引く
-        message.reply('subtractTime={}'.format(subtractTime))
-        for i in range(hour1*2): # 
-            sleep(10) #30分
-            if i == 0:
-                message.reply('{}分経過シマシタ'.format(30))
-            if i >= 1:
-                if i % 2 == 1:
-                    message.reply('i={}'.format(i))
-                    message.reply('{}時間経過シマシタ'.format(i/2))
-                elif i % 2 == 0:
-                    message.reply('i={}'.format(i))
-                    message.reply('{}時間{}分経過シマシタ'.format((i/2),30))
-        sleep(subtractTime)
-        message.reply('{}時間{}分経過シマシタ。目的ノ時間ニナッタタメ、タイマーヲ終了シマス'.format(hour1,subtractTime))
-    else:
-        sleep(clocktime*60)
-        message.reply('{}分経過シマシタ。目的ノ時間ニナッタタメ、タイマーヲ終了シマス'.format(clocktime))
-    
+# minute_time%30 = 0 ならsubtract_time = 0
+def timer(message,minute_time):
+    SECONDS = 60 
+    NOTIFICATION_TIME = 30 #通知時間(分)
+
+    # 通知時間と同じかそれより小さい場合
+    if minute_time - NOTIFICATION_TIME <= 0:
+        sleep(minute_time*SECONDS)
+        message.reply('{}分経過シマシタ.目的ノ時間ニナッタタメ,タイマーヲ終了シマス'.format(minute_time))
+        return
+
+
+    #通知時間より大きいが、余剰となる時間がある場合
+    # 通知回数分ループを回す
+    notification_times = math.floor(minute_time/NOTIFICATION_TIME)  #通知回数
+    for i in range(1,notification_times+1): # 通知回数分繰り返し +1はしないといけない
+        sleep(NOTIFICATION_TIME*SECONDS) 
+        if NOTIFICATION_TIME*i >= 60: #60分 -> 1時間に換算する
+            hour_time = math.floor(NOTIFICATION_TIME*i/60)
+            message.reply('{}時間{}分経過シマシタ.'.format(hour_time,NOTIFICATION_TIME*i-hour_time*60))
+        else:
+            message.reply('{}分経過シマシタ.'.format(NOTIFICATION_TIME*i))
+
+    if minute_time%NOTIFICATION_TIME != 0:
+        sleep(minute_time-notification_times*NOTIFICATION_TIME) #図りたい時間 - 通知回数*通知時間
 
 
 
@@ -57,19 +59,19 @@ def mention_func(message):
 @respond_to('(.*)分タイマー')
 def mention_func2(message,arg1):
     try:
-        time1 = int(arg1) #分
-        if time1>300:
+        minute_time = int(arg1) #分
+        if minute_time>300:
             message.reply('300分以上ノタイマーニハ対応シテイマセン')
-        elif time1<1:
+        elif minute_time<1:
             message.reply('１分以上ニシテクダサイ')
         else:
-            if time1>=60:
-                hourTime = math.floor(time1/60)
-                subtractTime = time1 - hourTime*60
-                message.reply('{}時間{}分後オシラセシマス'.format(hourTime,subtractTime))
+            if minute_time>=60:
+                hour_time = math.floor(minute_time/60)
+                subtract_time = minute_time - hour_time*60
+                message.reply('{}時間{}分後オシラセシマス'.format(hour_time,subtract_time))
             else:
-                message.reply('{}分後オシラセシマス'.format(time1)) # メンション
-        hour_time(message,time1)
+                message.reply('{}分後オシラセシマス'.format(minute_time)) # メンション
+        timer(message,minute_time)
     except ValueError:
         message.reply('分ノ前ハ数値ノミ入力シテクダサイ')
 
