@@ -83,7 +83,7 @@ def mention_func2(message,arg1):
                 message.reply('{}時間{}分後オシラセシマス'.format(hour_time,subtract_time))
             else:
                 message.reply('{}分後オシラセシマス'.format(minute_time)) # メンション
-        timer(message,minute_time)
+            timer(message,minute_time)
     except ValueError:
         message.reply('分ノ前ハ数値ノミ入力シテクダサイ')
 
