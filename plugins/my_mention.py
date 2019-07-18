@@ -32,24 +32,36 @@ def timer(message,minute_time):
     # 通知時間と同じかそれより小さい場合
     if minute_time - NOTIFICATION_TIME <= 0:
         sleep(minute_time*SECONDS)
-        message.reply('{}分経過シマシタ.目的ノ時間ニナッタタメ,タイマーヲ終了シマス'.format(minute_time))
+        message.reply('{}分経過シマシタ... ***{}分未満'.format(minute_time,NOTIFICATION_TIME))
+        message.reply('時間ニナッタタメ...タイマーヲ終了シマス ***通知時間未満')
         return
 
 
-    #通知時間より大きいが、余剰となる時間がある場合
+    #通知時間より大きい場合
     # 通知回数分ループを回す
     notification_times = math.floor(minute_time/NOTIFICATION_TIME)  #通知回数
     for i in range(1,notification_times+1): # 通知回数分繰り返し +1はしないといけない
         sleep(NOTIFICATION_TIME*SECONDS) 
         if NOTIFICATION_TIME*i >= 60: #60分 -> 1時間に換算する
             hour_time = math.floor(NOTIFICATION_TIME*i/60)
-            message.reply('{}時間{}分経過シマシタ.'.format(hour_time,NOTIFICATION_TIME*i-hour_time*60))
+            message.reply('{}時間{}分経過シマシタ...残リ{}分デス ***i={}'.format(hour_time,NOTIFICATION_TIME*i-hour_time*60,minute_time-NOTIFICATION_TIME*i,i))
         else:
-            message.reply('{}分経過シマシタ.'.format(NOTIFICATION_TIME*i))
+            message.reply('{}分経過シマシタ...残リ{}分デス ***i={}'.format(NOTIFICATION_TIME*i,minute_time-NOTIFICATION_TIME*i,i))
 
+    #通知時間で割り切れない場合(あまりの時間がある場合)
     if minute_time%NOTIFICATION_TIME != 0:
         sleep(minute_time-notification_times*NOTIFICATION_TIME) #図りたい時間 - 通知回数*通知時間
+        if minute_time >= 60:
+            message.reply('{}時間{}分経過シマシタ... ***アマリアリ'.format(hour_time,minute_time-hour_time*60))
+            message.reply('時間ニナッタタメ...タイマーヲ停止シマス')
+        else:
+            message.reply('{}分経過シマシタ.. ***アマリアリ'.format(minute_time))
+            message.reply('時間ニナッタタメ...タイマーヲ停止シマス')
+    #通知時間で割り切れた場合
+    else:
+        message.reply('時間ニナッタタメ...タイマーヲ停止シマス ***アマリナシ')
 
+            
 
 
 @respond_to('ハロー')
