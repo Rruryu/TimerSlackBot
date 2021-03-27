@@ -1,0 +1,2 @@
+# TimerSlackBot
+スラック用タイマーbot
